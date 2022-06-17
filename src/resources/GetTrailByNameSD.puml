@@ -1,0 +1,10 @@
+@startuml
+title Get Trail By Name
+
+actor Client
+participant TrailController
+participant TrailService
+participant TrailRepository
+database Datasource
+
+@enduml

@@ -9,6 +9,12 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
+apply plugin: 'com.github.johnrengelman.shadow'
+
+assemble.dependsOn = [shadowJar]
+
+import com.github.jengelman.gradle.plugins.shadow.transformers.*
+
 ext['junit-jupiter.version'] = '5.7.2'
 
 repositories {
@@ -74,10 +80,15 @@ spotbugsMain {
 }
 
 dependencies {
+    implementation group: 'org.springframework.cloud', name: 'spring-cloud-function-adapter-aws', version: '3.2.4'
+
     //SpringBoot
     implementation 'org.springframework.boot:spring-boot-starter-web'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation group: 'com.amazonaws.serverless', name: 'aws-serverless-java-container-springboot2', version: '1.4'
+
 
     //JUnit
     implementation 'org.junit.jupiter:junit-jupiter:5.7.2'
@@ -87,8 +98,31 @@ dependencies {
     //Mockito
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '3.10.0'
 
-    //ATA Test Infrastructure
-    implementation project('LibrariesAndUtilities:ATACurriculumTestInfrastructure')
+    //AWS Lambda
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
+    implementation 'com.amazonaws:aws-java-sdk-s3'
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
+    implementation 'com.amazonaws:aws-lambda-java-events:2.2.9'
+    runtimeOnly 'com.amazonaws:aws-lambda-java-log4j2:1.2.0'
+
+}
+
+
+shadowJar {
+    classifier = 'aws'
+    dependencies {
+        exclude(
+                dependency("org.springframework.cloud:spring-cloud-function-web:3.2.4"))
+    }
+    // Required for Spring
+    mergeServiceFiles()
+    append 'META-INF/spring.handlers'
+    append 'META-INF/spring.schemas'
+    append 'META-INF/spring.tooling'
+    transform(PropertiesFileTransformer) {
+        paths = ['META-INF/spring.factories']
+        mergeStrategy = "append"
+    }
 }
 
 test {
@@ -117,6 +151,11 @@ test {
             }
         }
     }
+}
+
+configurations {
+    compile.exclude module: 'spring-boot-starter-tomcat'
+    compile.exclude group: 'org.apache.tomcat'
 }
 
 project.configurations.implementation.setCanBeResolved(true)
