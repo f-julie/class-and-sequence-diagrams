@@ -7,4 +7,25 @@ participant TrailService
 participant TrailRepository
 database Datasource
 
+Client -> TrailController: GET /trails/name/{name}
+
+TrailController -> TrailService: getTrailByName
+
+TrailService -> TrailRepository: findByName
+
+TrailRepository -> Datasource
+Datasource --> TrailRepository: Trail
+
+TrailRepository --> TrailService: Optional<Trail>
+
+alt if No Trail Found
+TrailService --> TrailController: RuntimeException
+TrailController --> Client: 500 Error
+else otherwise continue
+end
+
+TrailService --> TrailController: Trail
+
+TrailController --> Client: ResponseEntity
+
 @enduml

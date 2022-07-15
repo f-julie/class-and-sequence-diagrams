@@ -16,7 +16,7 @@ public class ParksController {
     @Autowired
     ParksService parksService;
 
-    @GetMapping
+    @GetMapping(value = "")
     public ResponseEntity<?> getParks() {
         List<Park> parks = parksService.getAllParks();
         return new ResponseEntity<>(parks, HttpStatus.OK);
