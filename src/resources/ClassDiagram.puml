@@ -1,32 +1,9 @@
 @startuml
+
 class Park {
-    -id: int
-    -name: String
-    -location: String
-
-    +getId(): int
-    +getName(): String
-    +getLocation(): String
+    private int id;
+    private String name;
+    private String location;
 }
-
-class Trail {
-    -id: int
-    -trailType: TrailType
-    -parkId: int
-
-    +getId(): int
-    +getTrailType(): TrailType
-    +getParkId(): int
-}
-
-enum TrailType {
-    MOUNTAIN
-    FOREST
-    VALLEY
-    RIVER
-}
-
-Park "1" --o "0.." Trail
-Trail . TrailType
 
 @enduml
