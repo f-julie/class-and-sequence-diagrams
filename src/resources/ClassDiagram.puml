@@ -1,0 +1,9 @@
+@startuml
+
+class Park {
+    private int id;
+    private String name;
+    private String location;
+}
+
+@enduml
